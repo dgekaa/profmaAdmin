@@ -132,10 +132,10 @@ const App = () => {
       });
   };
 
-  // useEffect(() => {
-  //   loadUsers(type.Client);
-  //   loadUsers(type.Master);
-  // }, []);
+  useEffect(() => {
+    loadUsers(type.Client);
+    loadUsers(type.Master);
+  }, []);
 
   useEffect(() => {
     console.log(masters, "-----masters");
