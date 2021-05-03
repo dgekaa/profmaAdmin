@@ -405,6 +405,7 @@ const App = () => {
             </div>
             <AppointmentsWrapHeader>
               <AppointmentsRow>Id </AppointmentsRow>
+              <AppointmentsRow>Мастер/Клиент </AppointmentsRow>
               <AppointmentsRow> Дата </AppointmentsRow>
               <AppointmentsRow> Время </AppointmentsRow>
               <AppointmentsRow> Статус </AppointmentsRow>
@@ -415,6 +416,15 @@ const App = () => {
               return (
                 <AppointmentsWrap>
                   <AppointmentsRow> {el.id} </AppointmentsRow>
+                  <AppointmentsRow>
+                    {el.client
+                      ? el.client.profile
+                        ? el.client.profile.name
+                        : "-"
+                      : el.master.profile
+                      ? el.master.profile.name
+                      : "-"}
+                  </AppointmentsRow>
                   <AppointmentsRow> {el.date} </AppointmentsRow>
                   <AppointmentsRow> {el.time} </AppointmentsRow>
                   <AppointmentsRow> {el.status} </AppointmentsRow>
