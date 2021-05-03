@@ -304,7 +304,11 @@ const App = () => {
             }}
             active={clickedBtn === "clients"}
           >
-            Клиенты {DATA[0].type === "Client" && `(${DATA.length})`}
+            Клиенты{" "}
+            {DATA &&
+              DATA.length &&
+              DATA[0].type === "Client" &&
+              `(${DATA.length})`}
           </Button>
           <Button
             onClick={() => {
@@ -313,7 +317,11 @@ const App = () => {
             }}
             active={clickedBtn === "masters"}
           >
-            Мастера {DATA[0].type === "Master" && `(${DATA.length})`}
+            Мастера{" "}
+            {DATA &&
+              DATA.length &&
+              DATA[0].type === "Master" &&
+              `(${DATA.length})`}
           </Button>
         </LeftMenu>
         <Content>
