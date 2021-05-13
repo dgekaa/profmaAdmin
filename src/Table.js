@@ -175,12 +175,11 @@ export const TableAppointments = (props) => {
       .then((data) => {
         if (data.data.user.client_appointments.length) {
           setUser(data.data.user.client_appointments);
-          setEmail(data.data.user.email);
         }
         if (data.data.user.master_appointments.length) {
           setUser(data.data.user.master_appointments);
-          setEmail(data.data.user.email);
         }
+        setEmail(data.data.user.email);
       })
       .catch((err) => {
         alert("error");
