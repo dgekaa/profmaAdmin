@@ -2,82 +2,94 @@ import "./App.css";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import QUERY from "./query";
-import { Container, Table, Button, Spinner, Modal } from "react-bootstrap";
-import { push as Menu } from "react-burger-menu";
+import Table from "./Table";
 
 const Header = styled.div`
-  height: 50px;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: rgba(0, 0, 0, 0.6);
-  position: fixed !important;
-  font-size: 25px;
-  top: 0;
-  left: 0;
-  background-color: #fff;
-  border-bottom: 1px solid #eee;
-`;
-
-var styles = {
-  bmBurgerButton: {
-    position: "fixed",
-    width: "36px",
-    height: "30px",
-    left: "10px",
-    top: "10px",
-  },
-  bmBurgerBars: {
-    background: "#000",
-  },
-  bmBurgerBarsHover: {
-    background: "#999",
-  },
-  bmCrossButton: {
-    height: "36px",
-    width: "36px",
-    marginTop: "5px",
-  },
-  bmCross: {
-    background: "#000",
-  },
-  bmMenuWrap: {
-    position: "fixed",
-    height: "100%",
-  },
-  bmMenu: {
-    overflow: "hidden",
-    background: "#fff",
-    fontSize: "1.15em",
-    borderRight: "1px solid #eee",
-  },
-  bmMorphShape: {
-    fill: "#373a47",
-  },
-  bmItemList: {
-    color: "#000",
-  },
-  bmItem: {
-    display: "inline-block",
-  },
-  bmOverlay: {
-    position: "fixed",
-    background: "rgba(0, 0, 0, 0.07)",
-    overflow: "hidden",
-  },
-};
+    position: fixed;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    top: 0;
+    right: 0;
+    left: 200px;
+    height: 49px;
+    padding-right: 20px;
+    color: #999;
+    background-color: #fff;
+    width: calc(100% - 200px);
+    box-shadow: 0 0.125rem 0.625rem rgb(90 97 105 / 12%);
+  `,
+  HeaderWrap = styled.div`
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+  `,
+  LeftMenu = styled.div`
+    background-color: #fff;
+    position: fixed;
+    width: 200px;
+    height: 100vh;
+    box-shadow: 0 0.125rem 9.375rem rgb(90 97 105 / 10%),
+      0 0.25rem 0.5rem rgb(90 97 105 / 12%),
+      0 0.9375rem 1.375rem rgb(90 97 105 / 10%),
+      0 0.4375rem 2.1875rem rgb(165 182 201 / 10%);
+  `,
+  LeftMenuHeader = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #5a6169;
+    font-weight: 500;
+    height: 50px;
+    border-bottom: 1px solid #e1e5eb;
+    font-size: 25px;
+  `,
+  UnderLeftMenu = styled.div`
+    width: 200px;
+    height: 100vh;
+  `,
+  Wrapper = styled.div`
+    display: flex;
+    flex-direction: row;
+    background-color: #f5f6f8;
+  `,
+  TableWrap = styled.div`
+    z-index: 0 !important;
+    display: flex;
+    flex: 1;
+    margin-top: 75px;
+  `,
+  Button = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50px;
+    color: #3d5170;
+    font-weight: 400;
+    cursor: pointer;
+    background-color: ${(props) => (props.active ? "#fbfbfb" : "#fff")};
+    color: ${(props) => (props.active ? "#007bff" : "#3d5170")};
+    box-shadow: ${(props) =>
+      props.active ? "inset 0.1875rem 0 0 #007bff" : null};
+    &:hover {
+      transition: 0.2s ease all;
+      box-shadow: inset 0.1875rem 0 0 #007bff;
+      background-color: #fbfbfb;
+      color: #007bff;
+    }
+  `;
 
 const App = () => {
   const type = { Master: "Master", Client: "Client" };
   const [clickedBtn, setClickedBtn] = useState(""),
-    [DATA, setDATA] = useState(null),
-    [isLoading, setIsLoading] = useState(false),
-    [selectedUser, setSelectedUser] = useState(""),
-    [modalShow, setModalShow] = useState(false);
+    [DATA, setDATA] = useState([]);
 
   const loadUsers = (usersType) => {
-    setIsLoading(true);
     QUERY({
       query: `query {users (type: ${usersType}, first:${100}) { 
         data { 
@@ -113,11 +125,9 @@ const App = () => {
       .then((res) => res.json())
       .then((data) => {
         setDATA(data.data.users.data);
-        setIsLoading(false);
       })
       .catch((err) => {
         alert("error");
-        setIsLoading(false);
       });
   };
 
@@ -126,136 +136,41 @@ const App = () => {
     loadUsers(type.Client);
   }, []);
 
-  const MyVerticallyCenteredModal = (props) => {
-    return (
-      <Modal
-        {...props}
-        size="lg"
-        aria-labelledby="contained-modal-title-vcenter"
-        centered
-      >
-        <Modal.Header closeButton>
-          <Modal.Title id="contained-modal-title-vcenter">
-            <div>Appointments</div>
-            UserId: {selectedUser.id} Name:{"  "}
-            {selectedUser.profile ? selectedUser.profile.name : "-"} {"  "}
-            Email:
-            {selectedUser.profile ? selectedUser.profile.email : "-"}
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Table striped bordered hover>
-            <thead>
-              <tr>
-                <th>Id</th>
-                <th>Master/client</th>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Status</th>
-                <th>Offers</th>
-              </tr>
-            </thead>
-            <tbody>
-              {modalShow &&
-                modalShow.length &&
-                modalShow.map((el, index) => (
-                  <tr>
-                    <td>{el.id}</td>
-                    <td>
-                      {el.client
-                        ? el.client.profile
-                          ? el.client.profile.name
-                          : "-"
-                        : el.master.profile
-                        ? el.master.profile.name
-                        : "-"}
-                    </td>
-                    <td>{el.date}</td>
-                    <td>{el.time.slice(0, 5)}</td>
-                    <td>{el.status}</td>
-                    <td>
-                      {el.offers.length
-                        ? el.offers.map((el, i) => (
-                            <tr>
-                              <td>{el.service.name}</td>
-                              <td>{el.price_by_pack.duration} мин.</td>
-                              <td>{el.price_by_pack.price} руб.</td>
-                            </tr>
-                          ))
-                        : "-"}
-                    </td>
-                  </tr>
-                ))}
-            </tbody>
-          </Table>
-        </Modal.Body>
-      </Modal>
-    );
-  };
-
   return (
     <div className="App">
-      <div id="outer-container">
-        <Menu
-          // onStateChange={(data) => window.scrollTo(0, 0)}
-          disableAutoFocus
-          styles={styles}
-          burgerButtonClassName={"burger"}
-          pageWrapId={"page-wrap"}
-          outerContainerId={"outer-container"}
-          width={"210px"}
-        >
-          <div
-            style={{
-              borderBottom: "1px solid #eee",
-              padding: "11px",
-              width: "210px",
-            }}
-          >
-            Profma
-          </div>
+      <Wrapper>
+        <LeftMenu>
+          <LeftMenuHeader>Profma</LeftMenuHeader>
+
           <Button
-            style={{ margin: "10px", width: "190px", marginTop: "21px" }}
-            variant="outline-info"
-            block
+            active={clickedBtn === "clients"}
             onClick={() => {
               setClickedBtn("clients");
               loadUsers(type.Client);
             }}
-            active={clickedBtn === "clients"}
           >
-            КЛИЕНТЫ{" "}
-            {DATA &&
-              DATA.length &&
-              DATA[0].type === "Client" &&
-              `(${DATA.length})`}
+            Клиенты
           </Button>
           <Button
-            style={{ margin: "10px", width: "190px" }}
-            variant="outline-info"
-            block
+            active={clickedBtn === "masters"}
             onClick={() => {
               setClickedBtn("masters");
               loadUsers(type.Master);
             }}
-            active={clickedBtn === "masters"}
           >
-            МАСТЕРА{" "}
-            {DATA &&
-              DATA.length &&
-              DATA[0].type === "Master" &&
-              `(${DATA.length})`}
+            Мастера
           </Button>
-        </Menu>
-        <div id="page-wrap" style={{ background: "rgba(0,0,0,0.02)" }}>
-          <Header>
-            {DATA && DATA.length && DATA[0].type === "Client"
-              ? "Таблица клиентов"
-              : "Таблица мастеров"}
-          </Header>
-          <Container>
-            <div style={{ height: "70px" }}>Админка</div>
-            <Table striped bordered hover>
+        </LeftMenu>
+        <UnderLeftMenu />
+        <TableWrap>
+          <HeaderWrap>
+            <Header>Админка PROFMA</Header>
+          </HeaderWrap>
+          <Table length={DATA.length} DATA={DATA} />
+        </TableWrap>
+      </Wrapper>
+
+      {/* <Table striped bordered hover>
               <thead>
                 <tr>
                   <th>Id</th>
@@ -324,8 +239,8 @@ const App = () => {
                     </tr>
                   ))}
               </tbody>
-            </Table>
-          </Container>
+            </Table> */}
+      {/* </Container>
         </div>
       </div>
 
@@ -346,7 +261,7 @@ const App = () => {
             <span className="sr-only">Loading...</span>
           </Spinner>
         </div>
-      )}
+      )} */}
     </div>
   );
 };
